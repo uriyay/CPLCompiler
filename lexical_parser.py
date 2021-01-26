@@ -43,7 +43,7 @@ def p_error(p):
         stack_state_str,
         p,
         parser.action[parser.state]
-    ))
+    ), file=sys.stderr)
 
 def p_program(p):
     'program : declarations stmt_block'
@@ -341,4 +341,4 @@ def main(input_file):
     pprint(result)
 
 if __name__ == '__main__':
-    main(*sys.argv[1:])
+    main(sys.argv[1])

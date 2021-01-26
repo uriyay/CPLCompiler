@@ -120,7 +120,7 @@ class Compiler:
         try:
             handle_func(stmt_ast[1])
         except CompilerError as err:
-            print('error in line {}: {}'.format(self.cur_lineno, repr(err)))
+            print('error in line {}: {}'.format(self.cur_lineno, repr(err)), file=sys.stderr)
             self.has_errors = True
 
     def handle_comment(self, comment_ast):
@@ -454,4 +454,4 @@ def main(input_file):
             fp.write(quad_code)
 
 if __name__ == '__main__':
-    main(*sys.argv[1:])
+    main(sys.argv[1])

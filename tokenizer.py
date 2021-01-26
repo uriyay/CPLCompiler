@@ -113,7 +113,7 @@ def t_ID(t):
 def t_error(t):
     global has_tokenizing_error
     has_tokenizing_error = True
-    print("Illegal character '{}' in line {} char {}".format(t.value[0], t.lineno, t.lexpos))
+    print("Illegal character '{}' in line {} char {}".format(t.value[0], t.lineno, t.lexpos), file=sys.stderr)
     t.lexer.skip(1)
 
 lexer = lex.lex(debug=False)
@@ -130,4 +130,4 @@ def main(path):
         print(tok)
 
 if __name__ == '__main__':
-    main(*sys.argv[1:])
+    main(sys.argv[1])
