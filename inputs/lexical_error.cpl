@@ -1,0 +1,7 @@
+/* lexical error: should be a: int */
+a: int, int;
+/* normal input */
+b: int;
+{
+    b = 1;
+}

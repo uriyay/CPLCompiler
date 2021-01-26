@@ -5,6 +5,7 @@ import sys
 from pprint import pprint
 
 from error import CompilerError
+import tokenizer
 from tokenizer import tokens, lexer
 
 class SemanticError(CompilerError):
@@ -16,20 +17,28 @@ class SemanticState:
         self.is_in_while = False
 
 start = 'program'
-debug = True
+debug = False
+has_lexical_error = False
+
+def toggle_debug(debug_flag=True):
+    global debug
+    debug = debug_flag
 
 def log_debug(msg):
     if debug:
         print(msg)
 
 def log_enter():
-    call_stack = traceback.extract_stack()
-    caller = call_stack[-2]
-    print("In %s() (line %d)" % (caller.name, caller.lineno))
+    if debug:
+        call_stack = traceback.extract_stack()
+        caller = call_stack[-2]
+        print("In %s() (line %d)" % (caller.name, caller.lineno))
 
 def p_error(p):
+    global has_lexical_error
+    has_lexical_error = True
     stack_state_str = ' '.join([symbol.type for symbol in parser.symstack][1:])
-    raise SemanticError('Syntax error in input! Parser State:{}, Stack:"{}", symbol:"{}", action: "{}"'.format(
+    print('SemanticError: Syntax error in input! Parser State:{}, Stack:"{}", symbol:"{}", action: "{}"'.format(
         parser.state,
         stack_state_str,
         p,

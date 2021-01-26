@@ -2,4 +2,6 @@ a: int;
 {
     /* used before assigned */
     output(a);
+    a = 1;
+    output(a);
 }

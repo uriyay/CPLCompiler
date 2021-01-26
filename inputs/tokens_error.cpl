@@ -1,0 +1,7 @@
+/* tokenizer error - $ is not defined */
+$
+/* normal input */
+a: int;
+{
+    a = 1;
+}

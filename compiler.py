@@ -4,7 +4,7 @@ from pprint import pprint
 
 from error import CompilerError
 from tokenizer import tokens, lexer
-from lexical_parser import parser
+import lexical_parser
 from symbol_table import SymbolTable, AlreadyExists, Symbol
 from codegen import Codegen
 from expr import *
@@ -25,6 +25,7 @@ class Compiler:
         self.symbol_table = SymbolTable()
         self.codegen = Codegen()
         self.cur_lineno = 1
+        self.has_errors = False
 
         #a stack of exit labels, this attribute will be used for BREAK stmt in order to know where to jump to
         self.while_exit_label = []
@@ -43,13 +44,16 @@ class Compiler:
         return 'int'
 
     def run(self):
-        self.ast = parser.parse(self.code_text, debug=False)
-        pprint(self.ast)
+        self.ast = lexical_parser.parser.parse(self.code_text, debug=False)
+        if lexical_parser.tokenizer.has_tokenizing_error or lexical_parser.has_lexical_error:
+            self.has_errors = True
         self.create_temp_vars()
         self.handle_program(self.ast)
-        #replace labels names with labels numbers
-        self.codegen.backpatching()
-        return '\n'.join(self.codegen.code)
+        if not self.has_errors:
+            #replace labels names with labels numbers
+            self.codegen.backpatching()
+            return '\n'.join(self.codegen.code)
+        return None
 
     def create_temp_vars(self):
         self.temp_vars = {
@@ -89,7 +93,8 @@ class Compiler:
     def handle_stmt_block(self, stmt_block_ast):
         self.assert_symbol(stmt_block_ast[0], 'stmt_block')
         self.symbol_table.make_table()
-        self.handle_stmtlist(stmt_block_ast[1])
+        if stmt_block_ast[1]:
+            self.handle_stmtlist(stmt_block_ast[1])
         self.symbol_table.pop_table()
 
     def handle_stmtlist(self, stmtlist_ast):
@@ -116,6 +121,7 @@ class Compiler:
             handle_func(stmt_ast[1])
         except CompilerError as err:
             print('error in line {}: {}'.format(self.cur_lineno, repr(err)))
+            self.has_errors = True
 
     def handle_comment(self, comment_ast):
         pass
@@ -441,15 +447,11 @@ def main(input_file):
         program = f.read()
     compiler = Compiler(program)
     quad_code = compiler.run()
-    #try:
-    #    compiler.run()
-    #except Exception as err:
-    #    print('got exception: {}'.format(err))
-    #    import ipdb; ipdb.post_mortem()
-    print('Quad code:')
-    print(compiler.codegen.get_code())
-    with open('out.quad', 'w') as fp:
-        fp.write(quad_code)
+    if quad_code:
+        print('Quad code:')
+        print(compiler.codegen.get_code())
+        with open('out.quad', 'w') as fp:
+            fp.write(quad_code)
 
 if __name__ == '__main__':
     main(*sys.argv[1:])

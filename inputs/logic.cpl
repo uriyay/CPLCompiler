@@ -4,10 +4,9 @@ b: int;
     input(a);
     if (a > 1 && a < 3 || a > 10 && a < 20) {
         b = 1337;
-        output(b);
     }
     else {
         b = 0;
-        output(b);
     }
+    output(b);
 }

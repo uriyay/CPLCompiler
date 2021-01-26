@@ -79,6 +79,8 @@ t_COMMENT = '(?s)/\*(.*?)\*/'
 
 t_ignore = '[\r ]'
 
+has_tokenizing_error = False
+
 def t_newline(t):
     r'\n'
     t.lexer.lineno += 1
@@ -109,10 +111,12 @@ def t_ID(t):
     return t
 
 def t_error(t):
-    print("Illegal character '%s'" % t.value[0])
+    global has_tokenizing_error
+    has_tokenizing_error = True
+    print("Illegal character '{}' in line {} char {}".format(t.value[0], t.lineno, t.lexpos))
     t.lexer.skip(1)
 
-lexer = lex.lex(debug=True)
+lexer = lex.lex(debug=False)
 
 def main(path):
     with open(path) as fp:
