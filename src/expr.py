@@ -27,7 +27,7 @@ class Number(Expr):
 class Temp(Expr):
     def __init__(self, name, var_type):
         self.name = name
-        self.var_type = var_type
+        self.type = var_type
 
     def get_value(self):
         return self.name
@@ -35,6 +35,7 @@ class Temp(Expr):
 class Label(Expr):
     def __init__(self, name):
         self.name = name
+        self.type = None
 
     def get_value(self):
         return self.name

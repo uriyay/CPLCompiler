@@ -78,7 +78,10 @@ class Compiler:
         idlist = self.handle_idlist(declaration_ast[1][0])
         var_type = self.handle_type(declaration_ast[1][1])
         for var_id in idlist:
-            self.symbol_table.insert(Symbol(var_id, var_type))
+            try:
+                self.symbol_table.insert(Symbol(var_id, var_type))
+            except AlreadyExists:
+                print('error: symbol `{}` is already defined (in line {})'.format(var_id, self.cur_lineno), file=sys.stderr)
 
     def handle_idlist(self, idlist_ast):
         self.assert_symbol(idlist_ast[0], 'idlist')
@@ -203,7 +206,7 @@ class Compiler:
         if alloc_temp:
             if type(value) is not Temp:
                 #if value is not a Temp we need to allocate a new temp
-                dest = self.codegen.newtemp(value.type)
+                dest = self.codegen.newtemp(dest_type)
             else:
                 #if value is a Temp - use the 
                 dest = value
