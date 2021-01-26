@@ -120,7 +120,7 @@ class Compiler:
     def handle_assignment_stmt(self, assignment_stmt_ast):
         var_id = assignment_stmt_ast[0]
         var_sym = self.symbol_table.lookup(var_id)
-        var_type = var_sym.type
+        var_type = var_sym.sym_type
         expr = self.handle_expression(assignment_stmt_ast[1])
         expr_value = self.get_value_from_attr(expr)
 
