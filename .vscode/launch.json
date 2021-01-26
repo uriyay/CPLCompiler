@@ -8,9 +8,9 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/compiler.py",
+            "program": "${workspaceFolder}/cpq",
             "console": "integratedTerminal",
-            "args": ["${workspaceFolder}/inputs/tokens_error.cpl",]
+            "args": ["${workspaceFolder}/inputs/sample.ou",]
         }
     ]
 }

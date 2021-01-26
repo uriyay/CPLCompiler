@@ -2,12 +2,12 @@ import traceback
 import sys
 from pprint import pprint
 
-from error import CompilerError
-from tokenizer import tokens, lexer
-import lexical_parser
-from symbol_table import SymbolTable, AlreadyExists, Symbol
-from codegen import Codegen
-from expr import *
+from .error import CompilerError
+from .tokenizer import tokens, lexer
+from . import lexical_parser
+from .symbol_table import SymbolTable, AlreadyExists, Symbol
+from .codegen import Codegen
+from .expr import *
 
 class UnexpectedSymbol(CompilerError):
     pass
@@ -440,18 +440,3 @@ class Compiler:
                 elif relop == '<':
                     self.codegen.LSS(self.temp_vars['int'], expression1_value, expression2_value, is_float=(expr_type == 'float'))
         return expr
-
-
-def main(input_file):
-    with open(input_file) as f:
-        program = f.read()
-    compiler = Compiler(program)
-    quad_code = compiler.run()
-    if quad_code:
-        print('Quad code:')
-        print(compiler.codegen.get_code())
-        with open('out.quad', 'w') as fp:
-            fp.write(quad_code)
-
-if __name__ == '__main__':
-    main(sys.argv[1])

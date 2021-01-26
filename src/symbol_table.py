@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import error
+from . import error
 
 class AlreadyExists(error.CompilerError):
     pass

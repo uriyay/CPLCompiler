@@ -117,17 +117,3 @@ def t_error(t):
     t.lexer.skip(1)
 
 lexer = lex.lex(debug=False)
-
-def main(path):
-    with open(path) as fp:
-        data = fp.read()
-    print('data: "{}"'.format(data))
-    lexer.input(data)
-    while True:
-        tok = lexer.token()
-        if not tok:
-            break
-        print(tok)
-
-if __name__ == '__main__':
-    main(sys.argv[1])

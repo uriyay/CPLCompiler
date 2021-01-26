@@ -1,4 +1,4 @@
-from expr import *
+from .expr import *
 
 class Codegen:
     def __init__(self):

@@ -4,9 +4,9 @@ import traceback
 import sys
 from pprint import pprint
 
-from error import CompilerError
-import tokenizer
-from tokenizer import tokens, lexer
+from .error import CompilerError
+from . import tokenizer
+from .tokenizer import tokens, lexer
 
 class SemanticError(CompilerError):
     pass
@@ -333,12 +333,3 @@ def p_empty(p):
     log_enter()
 
 parser = yacc.yacc()
-
-def main(input_file):
-    with open(input_file) as f:
-        program = f.read()
-    result = parser.parse(program, debug=True)
-    pprint(result)
-
-if __name__ == '__main__':
-    main(sys.argv[1])
