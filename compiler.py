@@ -24,6 +24,7 @@ class Compiler:
         self.ast = None
         self.symbol_table = SymbolTable()
         self.codegen = Codegen()
+        self.cur_lineno = 1
 
         #a stack of exit labels, this attribute will be used for BREAK stmt in order to know where to jump to
         self.while_exit_label = []
@@ -69,6 +70,7 @@ class Compiler:
 
     def handle_declaration(self, declaration_ast):
         self.assert_symbol(declaration_ast[0], 'declaration')
+        self.cur_lineno = declaration_ast[2]
         idlist = self.handle_idlist(declaration_ast[1][0])
         var_type = self.handle_type(declaration_ast[1][1])
         for var_id in idlist:
@@ -109,10 +111,11 @@ class Compiler:
             'comment'
         )
         handle_func = getattr(self, 'handle_{}'.format(stmt_ast[0]))
+        self.cur_lineno = stmt_ast[2]
         try:
             handle_func(stmt_ast[1])
         except CompilerError as err:
-            print(repr(err))
+            print('error in line {}: {}'.format(self.cur_lineno, repr(err)))
 
     def handle_comment(self, comment_ast):
         pass
