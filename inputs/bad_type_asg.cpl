@@ -1,0 +1,5 @@
+/* This program checks bad type assignment - assign float to int var*/
+a : int;
+{
+    a = 0.1;
+}

@@ -1,0 +1,9 @@
+a: int;
+b: float;
+{
+    input(a);
+    if (a == 3)
+        b = 0.1;
+    else
+        b = 0.2;
+}

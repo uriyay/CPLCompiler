@@ -1,0 +1,5 @@
+a: int;
+b: float;
+{
+    output(a);
+}

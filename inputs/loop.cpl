@@ -1,0 +1,8 @@
+a: int;
+{
+    input(a);
+    while (a < 10) {
+        output(a);
+        a = a + 1;    
+    }
+}

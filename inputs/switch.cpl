@@ -1,0 +1,21 @@
+/* Check switch statement */
+a : int;
+b : int;
+{
+    input(a);
+    switch (a) {
+        case 1:
+        {
+            b = 2;
+        }
+        case 2:
+        {
+            b = 3;
+        }
+        default:
+        {
+            b = 0;
+        }
+    }
+    output(b);
+}

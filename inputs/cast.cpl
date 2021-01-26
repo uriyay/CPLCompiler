@@ -1,0 +1,6 @@
+a: int;
+b: float;
+{
+    a = static_cast<int>(0.4);
+    b = 1;
+}

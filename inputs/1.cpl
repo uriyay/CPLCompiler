@@ -1,0 +1,12 @@
+a: int;
+b : float;
+{
+    a = 4;
+    a = 4 / 2;
+    a = 3 - 1;
+    b = a + (2 * 0.1);
+    if (b <= 0.2)
+        output(b);
+    else
+        output(a);
+}
