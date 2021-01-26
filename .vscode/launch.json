@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/cpq",
             "console": "integratedTerminal",
-            "args": ["${workspaceFolder}/inputs/sample.ou",]
+            "args": ["${workspaceFolder}/inputs/cast.ou",]
         }
     ]
 }

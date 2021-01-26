@@ -269,13 +269,15 @@ class Compiler:
         self.assert_symbol_one_of(cast_ast[1], 'int', 'float')
         cast_type = cast_ast[1]
         expr = self.handle_expression(cast_ast[2])
+        expr_value = self.get_value_from_attr(expr)
         if cast_type != expr.type:
             #add code of RTOI or ITOR
             self.codegen.CAST(
                 self.temp_vars[cast_type],
-                self.temp_vars[expr.type],
+                expr_value,
                 cast_type == 'float'
             )
+            expr.value = self.temp_vars[cast_type]
         #change the type
         expr.type = cast_type
         return expr

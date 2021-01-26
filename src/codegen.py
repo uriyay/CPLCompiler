@@ -52,8 +52,8 @@ class Codegen:
             if arg_type is None:
                 arg_type = insn_type
             if arg.type != arg_type:
-                print("error: got argument `{}` of type `{}` as the {}'nth argument to instruction {}".format(
-                        arg, arg_type, arg_idx, insn
+                print("error: got argument `{}` of type `{}` as the {}'nth argument to instruction {} (expected type `{}`".format(
+                        arg, arg.type, arg_idx + 1, insn, arg_type
                     ),
                     file=sys.stderr)
 
