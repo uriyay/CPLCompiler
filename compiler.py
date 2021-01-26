@@ -364,7 +364,7 @@ class Compiler:
             expr = OR(boolexpr, boolterm)
             #OR is equivalent to A + B >= 1, i.e A + B > 0
             self.codegen.ADD(self.temp_vars['int'], tmp, self.temp_vars['int'], is_float=False)
-            self.codegen.GRT(self.temp_vars['int'], self.temp_vars['int'], 0, is_float=False)
+            self.codegen.GRT(self.temp_vars['int'], self.temp_vars['int'], Number(0, 'int'), is_float=False)
         else:
             boolterm = self.handle_boolterm(boolexpr_ast)
             expr = boolterm
@@ -381,7 +381,7 @@ class Compiler:
             expr = AND(boolterm, boolfactor)
             #AND is equivalent to A + B == 2
             self.codegen.ADD(self.temp_vars['int'], tmp, self.temp_vars['int'], is_float=False)
-            self.codegen.EQL(self.temp_vars['int'], self.temp_vars['int'], 2, is_float=False)
+            self.codegen.EQL(self.temp_vars['int'], self.temp_vars['int'], Number(2, 'int'), is_float=False)
         else:
             boolfactor = self.handle_boolfactor(boolterm_ast)
             expr = boolfactor

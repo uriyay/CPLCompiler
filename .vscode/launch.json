@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/compiler.py",
             "console": "integratedTerminal",
-            "args": ["${workspaceFolder}/inputs/error.cpl",]
+            "args": ["${workspaceFolder}/inputs/logic.cpl",]
         }
     ]
 }
