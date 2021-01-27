@@ -38,6 +38,7 @@ def p_error(p):
     global has_lexical_error
     has_lexical_error = True
     stack_state_str = ' '.join([symbol.type for symbol in parser.symstack][1:])
+    # symbol is the symbol that we got, action is the symbols that the parser expects
     print('SemanticError: Syntax error in input! Parser State:{}, Stack:"{}", symbol:"{}", action: "{}"'.format(
         parser.state,
         stack_state_str,

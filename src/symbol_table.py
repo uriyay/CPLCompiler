@@ -14,6 +14,10 @@ class Symbol:
         self.is_assigned = False
 
     def mark_assigned(self):
+        """
+        Mark this symbol as assigned with value.
+        self.is_assigned helps to check that non-assigned symbols will not be assigned to other symbols
+        """
         self.is_assigned = True
 
 class SymbolTable:

@@ -45,6 +45,8 @@ class Codegen:
     def check_args_types(self, insn, args_types):
         """
         Checks the arguments types of the instruction in order to see that there is no usage of the same variable to two different types
+        @param insn: the instruction
+        @param srgs_types: a mapping of arg's Attr to its type. If the matching arg type is None then the instruction type is taken
         """
         insn_type = self.get_insn_type(insn)
         for arg_idx,arg_info in enumerate(args_types.items()):

@@ -75,6 +75,9 @@ t_AND = '&&'
 t_SPACE = '[ \n]'
 t_ADDOP = r'[\+-]'
 t_MULOP = r'[\*/]'
+
+# (?s) is a modifier that makes . also match new line feeds
+# .*? is the non-greedy version of .*. It that matches the shortest possible sequence of characters (before a \*/ that comes next)
 t_COMMENT = '(?s)/\*(.*?)\*/'
 
 t_ignore = '[\r ]'
@@ -87,6 +90,8 @@ def t_newline(t):
 
 def t_RELOP(t):
     '(==|!=|>=|<=|<|>|!|=)'
+    #The order of the regex is critical, since the regex engine tends to match the first pattern before the others
+    #so if I put the '=' before '==' - it would say '==' is '=', '=' and not '=='
     if t.value == '!':
         t.type = 'NOT'
     elif t.value == '=':
@@ -106,6 +111,7 @@ t_LETTER = '[a-zA-Z]'
 
 def t_ID(t):
     '((static_cast<int>)|(static_cast<float>)|([a-zA-Z]([a-zA-Z0-9])*))'
+    #This function catches every word, it categorize it to a keyword if possible, if not - its an ID
     if t.value in RESERVED_WORDS:
         t.type = RESERVED_WORDS[t.value]
     return t
@@ -114,6 +120,7 @@ def t_error(t):
     global has_tokenizing_error
     has_tokenizing_error = True
     print("Illegal character '{}' in line {} char {}".format(t.value[0], t.lineno, t.lexpos), file=sys.stderr)
+    #try to skip one character and retry to parse token from the next character
     t.lexer.skip(1)
 
 lexer = lex.lex(debug=False)

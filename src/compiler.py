@@ -136,6 +136,7 @@ class Compiler:
         expr = self.handle_expression(assignment_stmt_ast[1])
         expr_value = self.get_value_from_attr(expr)
 
+        # check the type of the assigned expression
         if expr.type != var_type:
             if var_type == 'int':
                 raise TypeMismatch('Cannot assign `{}` to variable `{}` of type `{}`'.format(expr.type, var_id, var_type))
@@ -157,17 +158,20 @@ class Compiler:
         self.assert_symbol_one_of(addop_expr_ast[1], '+', '-')
         addop = addop_expr_ast[1]
         term = self.handle_term(addop_expr_ast[3])
+        # get the value of term, allocate it to a new temp if its not a basic expr (Number, ID or Temp)
         term_value = self.get_value_from_attr(term, alloc_temp=True)
         expr = self.handle_expression(addop_expr_ast[2])
+        # get the value of term, if its not a basic expr that value will be in self.temp_var[expr.type]
         expr_value = self.get_value_from_attr(expr, alloc_temp=False)
 
+        # this implements the rule - if one of them is float - the other should be casted to float
         val_type = self.type_max(expr.type, term.type)
 
         #cast if needed
         if expr.type != term.type:
             if term.type != val_type:
                 term_value = self.cast(term_value, dest_type=val_type, alloc_temp=True)
-            elif expr.type != 'float':
+            elif expr.type != val_type:
                 expr_value = self.cast(expr_value, dest_type=val_type, alloc_temp=False)
 
         val = ADD(expr.value, term.value, is_sub=(addop == '-'))
@@ -219,10 +223,13 @@ class Compiler:
         mulop = term_ast[1]
         self.assert_symbol_one_of(mulop, '*', '/')
         factor = self.handle_factor(term_ast[3])
+        # get the value of value, allocate it to a new temp if its not a basic expr (Number, ID or Temp)
         factor_value = self.get_value_from_attr(factor, alloc_temp=True)
         term = self.handle_term(term_ast[2])
+        # get the value of term, if its not a basic expr that value will be in self.temp_var[expr.type]
         term_value = self.get_value_from_attr(term)
 
+        # this implements the rule - if one of them is float - the other should be casted to float
         val_type = self.type_max(term.type, factor.type)
 
         #cast if needed
@@ -297,6 +304,20 @@ class Compiler:
         self.codegen.PRT(expr_value, is_float=expr.type == 'float')        
 
     def handle_if_stmt(self, if_stmt_ast):
+        """
+        Translates:
+        if (boolexpr) stmtlist_then
+        else stmtlist_else
+
+        To:
+        IASN self.temp_var['int'] boolexpr
+        JMPZ l_else self.temp_var['int']
+        stmtlist_then
+        JUMP l_after
+    l_else:
+        stmtlist_else
+    l_after:
+        """
         l_after = self.codegen.newlabel()
         l_else = self.codegen.newlabel()
         self.handle_boolexpr(if_stmt_ast[0])
@@ -312,6 +333,18 @@ class Compiler:
         self.codegen.label(l_after)
 
     def handle_while_stmt(self, while_stmt_ast):
+        """
+        Translates:
+        while (boolexpr) stmt
+
+        To:
+    l_boolexpr:
+        IASN self.temp_var['int'] boolexpr
+        JMPZ l_exit self.temp_var['int']
+        stmt
+        JMP l_boolexpr
+    l_exit:
+        """
         l_boolexpr = self.codegen.newlabel()
         l_exit = self.codegen.newlabel()
         #handle the while boolexpr
@@ -329,6 +362,27 @@ class Compiler:
         self.codegen.label(l_exit)
 
     def handle_switch_stmt(self, switch_stmt_ast):
+        """
+        Translates:
+        switch (expression) {
+            caselist..
+            default:
+                stmtlist
+        }
+
+        To:
+        IASN tmp expression
+        if (tmp == case_1) case_1_stmtlist
+        else {
+            if (tmp == case_2) case_2_stmtlist
+            else {
+                if (tmp == case_3) case_3_stmtlist
+                else {
+                    default_stmtlist
+                }
+            }
+        }
+        """
         tmp = self.codegen.newtemp('int')
         expr = self.handle_expression(switch_stmt_ast[0])
         expr_value = self.get_value_from_attr(expr)
@@ -340,7 +394,7 @@ class Compiler:
         self.assert_symbol(caselist[0], 'caselist')
         start_if_ast = None
         last_if_ast = None
-        #TODO: for some reason the else-part label is not generated well..
+        #generate a nested if-else for the caselist
         for case_num, case_stmtlist, case_lineno in caselist[1]:
             boolexpr = ('relop', '==', ('temp', tmp, 'int'), ('number', ('int', case_num)))
             then_stmt = ('stmt_block', ('stmt_block', case_stmtlist), case_lineno)
@@ -367,6 +421,7 @@ class Compiler:
     def handle_break_stmt(self, break_stmt_ast):
         if not self.while_exit_label:
             raise UnexpectedSymbol('got `break` statement outside a while loop')
+        #jump to the closest while exit
         self.codegen.JUMP(self.while_exit_label[-1])
 
     def handle_boolexpr(self, boolexpr_ast):
