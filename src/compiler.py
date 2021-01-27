@@ -341,11 +341,11 @@ class Compiler:
         start_if_ast = None
         last_if_ast = None
         #TODO: for some reason the else-part label is not generated well..
-        for case_num, case_stmtlist in caselist[1]:
+        for case_num, case_stmtlist, case_lineno in caselist[1]:
             boolexpr = ('relop', '==', ('temp', tmp, 'int'), ('number', ('int', case_num)))
-            then_stmt = ('stmt_block', ('stmt_block', case_stmtlist))
+            then_stmt = ('stmt_block', ('stmt_block', case_stmtlist), case_lineno)
             else_stmt = None
-            if_ast = ('if_stmt', [boolexpr, then_stmt])
+            if_ast = ('if_stmt', [boolexpr, then_stmt], case_lineno)
             if start_if_ast is None:
                 #the start if_ast to parse eventually
                 start_if_ast = if_ast
@@ -355,7 +355,12 @@ class Compiler:
             #mark this if_ast as the last_if_ast
             last_if_ast = if_ast
         #now add the default part as else part to the last_if_ast
-        last_if_ast[1].append(('stmt_block', ('stmt_block', switch_stmt_ast[2])))
+        default_case_stmtlist, default_case_lineno = switch_stmt_ast[2]
+        last_if_ast[1].append((
+                'stmt_block',
+                ('stmt_block', default_case_stmtlist),
+                default_case_lineno
+        ))
         #handle the huge if stmt
         self.handle_stmt(start_if_ast)
 

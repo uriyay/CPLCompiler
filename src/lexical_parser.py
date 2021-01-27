@@ -90,16 +90,19 @@ def p_idlist_list(p):
     lineno = p[1][2]
     idlist1.append(p[3])
     p[0] = ('idlist', idlist1, lineno)
+    p.set_lineno(0, lineno)
 
 def p_idlist_term(p):
     'idlist : ID'
     log_enter()
     p[0] = ('idlist', [p[1]], p.lineno(1))
+    p.set_lineno(0, p.lineno(1))
 
 def p_stmt_block_list(p):
     'stmt_block : CLPAREN stmtlist CRPAREN' 
     log_enter()
     p[0] = ('stmt_block', p[2])
+    p.set_lineno(0, p.lineno(1))
 
 def p_stmt_block_empty(p):
     'stmt_block : empty'
@@ -197,8 +200,11 @@ def p_while_stmt(p):
 def p_switch_stmt(p):
     'switch_stmt : SWITCH LPAREN expression RPAREN CLPAREN caselist DEFAULT COLON stmtlist CRPAREN'
     log_enter()
+    #set the line number for stmtlist of default case to be the line number of DEFAULT
+    #later, the line number of each stmt will be bubbled up and set
+    default_case_lineno = p.lineno(7)
     #expression, caselist, stmtlist
-    p[0] = (p[3], p[6], p[9])
+    p[0] = (p[3], p[6], (p[9], default_case_lineno))
     p.set_lineno(0, p.lineno(1))
 
 def p_caselist_list(p):
@@ -206,7 +212,7 @@ def p_caselist_list(p):
     log_enter()
     caselist1 = p[1][1]
     #number, stmtlist
-    case = (p[3], p[5])
+    case = (p[3], p[5], p.lineno(2))
     caselist1.append(case)
     p[0] = ('caselist', caselist1)
 
