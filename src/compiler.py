@@ -4,7 +4,7 @@ from pprint import pprint
 
 from .error import CompilerError
 from .tokenizer import tokens, lexer
-from . import lexical_parser
+from . import syntax_parser
 from .symbol_table import SymbolTable, AlreadyExists, Symbol
 from .codegen import Codegen
 from .expr import *
@@ -44,8 +44,8 @@ class Compiler:
         return 'int'
 
     def run(self):
-        self.ast = lexical_parser.parser.parse(self.code_text, debug=False)
-        if lexical_parser.tokenizer.has_tokenizing_error or lexical_parser.has_lexical_error:
+        self.ast = syntax_parser.parser.parse(self.code_text, debug=False)
+        if syntax_parser.tokenizer.has_tokenizing_error or syntax_parser.has_syntax_error:
             self.has_errors = True
         self.create_temp_vars()
         self.handle_program(self.ast)
